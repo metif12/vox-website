@@ -1285,8 +1285,12 @@ a:hover {
 }
 .first-page .first-page__download-block {
   margin-top: 35px;
-  display: grid;
-  grid-template-rows: max-content max-content;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 @media only screen and (max-width: 800px) {
   .first-page .first-page__download-block {
@@ -1310,7 +1314,6 @@ a:hover {
   background: rgba(0, 0, 0, 0.7);
   padding: 0 50px;
   border-radius: 24px;
-  margin-bottom: 20px;
   transition: all 0.2s;
 }
 @media only screen and (max-width: 800px) {
@@ -1321,6 +1324,30 @@ a:hover {
 }
 .first-page .first-page__download-button:hover {
   background-color: rgba(59, 62, 67, 0.7);
+}
+.first-page .first-page__github-link {
+  box-sizing: border-box;
+  height: 48px;
+  gap: 9px;
+  padding: 0 21px;
+  border: 1px solid #3b4656;
+  border-radius: 24px;
+  background: #12161c;
+  color: #edf0f5;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.first-page .first-page__github-link:hover {
+  border-color: #647286;
+  background: #171d25;
+  color: #fff;
+}
+.first-page .first-page__github-link svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
 }
 .first-page .first-page__source-link {
   color: #fff;
