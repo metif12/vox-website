@@ -110,3 +110,12 @@ Restoration repairs:
 The archived “Something more” placeholders and dated roadmap copy are preserved as originally published.
 
 The homepage screenshot `assets/screen1.png` is a current capture of Vox rendering news.ycombinator.com (the full macOS Vox window with rounded corners and shadow, 1252x1120, captured with the browser's `--screenshot` window mode from `~/code/vox2`). It appears in the "Runs on Vox" section; the hero image is `assets/hero-chatgpt.png` (Vox rendering chatgpt.com). `GET /version?os=<OS version>&vox=<installed Vox version>` returns the published Vox version as plain text for auto-updates: the contents of `VOX_VERSION_FILE` (in production `/var/www/vox-browser.org/version`, which `deploy.vsh` in `~/code/vox2` replaces after uploading each release), or the built-in `0.1.0` when that file is unset, missing or invalid. When `VOX_DB_CONNINFO` is set, it also inserts a row (`checked_at`, `os_version`, `vox_version`) into the `version_checks` table for every hit. The macOS download button links to `GET /download/macos`, which redirects to that release's `Vox-<version>-arm64.dmg` on GitHub, or to the latest GitHub release page while no version file is published. The original 2023 screenshot is kept at `archive/screen1-20231122.png`.
+
+
+Linux downloads use `/download/linux?arch=amd64|arm64` and redirect to the published
+release's `Vox-<version>-<arch>.deb`. The homepage detects desktop Linux and places
+its download first; macOS keeps Linux second with a Debian logo. Architecture is
+detected from the user agent and refined using browser client hints when available,
+defaulting to amd64. GitHub release asset sizes for both platforms are cached together
+in the background. The Debian open-use logo in `assets/debian.svg` comes from
+<https://www.debian.org/logos/openlogo-nd.svg>.

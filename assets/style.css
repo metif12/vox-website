@@ -2090,3 +2090,7 @@ a:focus-visible { outline: 3px solid #167dff; outline-offset: 5px; }
 .first-page .first-page__download-button--macos { display: inline-flex; align-items: center; justify-content: center; line-height: 1; }
 .first-page .download-button__apple { width: 19px; height: 19px; flex: none; margin: 0 10px 0 0; }
 .first-page .download-button__size { margin-left: 12px; color: rgba(255, 255, 255, 0.6); }
+
+.first-page .first-page__download-button--linux { line-height: 1; }
+.first-page .download-button__debian { flex: none; margin-right: 10px; }
+.first-page [data-download-os="linux"] .first-page__download-button--linux { order: -1; }

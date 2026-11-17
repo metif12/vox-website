@@ -116,7 +116,9 @@ fn test_macos_download_button_shows_the_published_dmg_size() {
 	})!
 	// A known size renders without a lookup; an unknown one is left out.
 	app.download_size.version = '0.1.1'
-	app.download_size.bytes = 88_943_712
+	app.download_size.bytes = {
+		dmg_name('0.1.1'): i64(88_943_712)
+	}
 	home := veb.render_request[App, Context](mut app, http.Request{ url: '/' })!
 	assert home.res.body.contains('Download for macOS<span class="download-button__size">89 MB</span>')
 	assert !home.res.body.contains(download_size_marker)
@@ -133,4 +135,51 @@ fn test_port_validation() {
 			assert false, 'Unexpectedly accepted port ${port}'
 		}
 	}
+}
+
+fn test_linux_download_architecture_and_release() {
+	path := os.join_path(os.vtmp_dir(), 'vox-website-linux-${os.getpid()}')
+	defer { os.rm(path) or {} }
+	os.write_file(path, '0.1.4\n')!
+	mut app := new_app(Config{ version_file: path })!
+	app.download_size.version = '0.1.4'
+	app.download_size.bytes = {
+		deb_name('0.1.4', 'amd64'): i64(17_133_944)
+		deb_name('0.1.4', 'arm64'): i64(18_729_050)
+	}
+	for ua, arch in {
+		'Mozilla/5.0 (X11; Linux x86_64)':  'amd64'
+		'Mozilla/5.0 (X11; Linux aarch64)': 'arm64'
+	} {
+		for method in [http.Method.get, .head] {
+			ctx := veb.render_request[App, Context](mut app, http.Request{
+				url:    '/download/linux'
+				method: method
+				header: http.new_header(key: .user_agent, value: ua)
+			})!
+			assert ctx.res.status() == .found
+			assert (ctx.res.header.get(.location) or { '' }) == '${releases_url}/download/0.1.4/Vox-0.1.4-${arch}.deb'
+			assert (ctx.res.header.get(.cache_control) or { '' }) == 'no-store'
+		}
+		home := app.download_html(ua)
+		assert home.contains('data-download-os="linux"')
+		assert home.contains('href="/download/linux?arch=${arch}"')
+		assert home.contains('Linux (.deb)<span class="download-button__size">${if arch == 'arm64' {
+			'19'
+		} else {
+			'17'
+		}} MB</span>')
+		assert !home.contains('<!--linux-')
+	}
+	for ua in ['Mozilla/5.0 (Macintosh; Intel Mac OS X)', 'Mozilla/5.0 (Linux; Android 13)'] {
+		assert app.download_html(ua).contains('data-download-os="macos"')
+	}
+	for arch in ['amd64', 'arm64', '../../bad'] {
+		ctx := veb.render_request[App, Context](mut app, http.Request{ url: '/download/linux?arch=${arch}' })!
+		expected := if arch == 'arm64' { 'arm64' } else { 'amd64' }
+		assert (ctx.res.header.get(.location) or { '' }) == '${releases_url}/download/0.1.4/Vox-0.1.4-${expected}.deb'
+	}
+	mut unpublished := new_app(Config{})!
+	ctx := veb.render_request[App, Context](mut unpublished, http.Request{ url: '/download/linux' })!
+	assert (ctx.res.header.get(.location) or { '' }) == '${releases_url}/latest'
 }

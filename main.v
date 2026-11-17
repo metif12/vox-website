@@ -46,13 +46,13 @@ struct Release {
 	assets []ReleaseAsset
 }
 
-// DownloadSize caches the published DMG's size. It is looked up once per
+// DownloadSize caches the published release's asset sizes. It is looked up once per
 // release in the background, so page requests never wait for GitHub.
 struct DownloadSize {
 mut:
 	lock      sync.Mutex
 	version   string
-	bytes     i64
+	bytes     map[string]i64
 	pending   bool
 	looked_up time.Time
 }
@@ -115,7 +115,7 @@ pub fn (mut app App) index(mut ctx Context) veb.Result {
 	}
 	// A shared cache must not bypass collection or replay another visitor's cookie.
 	ctx.set_header(.cache_control, 'no-store')
-	return ctx.html(home_html.replace(download_size_marker, app.download_size_label()))
+	return ctx.html(app.download_html(ctx.req.header.get(.user_agent) or { '' }))
 }
 
 // Updaters report their state as /version?os=<OS version>&vox=<installed Vox version>.
@@ -151,13 +151,55 @@ fn dmg_name(version string) string {
 	return 'Vox-${version}-arm64.dmg'
 }
 
-// The download button shows the published DMG's size once it is known.
-fn (mut app App) download_size_label() string {
-	version := app.release_file_version() or { return '' }
-	bytes := app.download_size.get(version)
-	if bytes <= 0 {
-		return ''
+// Linux downloads follow the same published release as macOS.
+@['/download/linux'; get; head]
+pub fn (mut app App) download_linux(mut ctx Context) veb.Result {
+	ctx.set_header(.cache_control, 'no-store')
+	arch := if ctx.query['arch'] in ['amd64', 'arm64'] {
+		ctx.query['arch']
+	} else {
+		linux_arch(ctx.req.header.get(.user_agent) or { '' })
 	}
+	if version := app.release_file_version() {
+		return ctx.redirect('${releases_url}/download/${version}/${deb_name(version, arch)}',
+			typ: .found
+		)
+	}
+	return ctx.redirect('${releases_url}/latest', typ: .found)
+}
+
+fn deb_name(version string, arch string) string {
+	return 'Vox-${version}-${arch}.deb'
+}
+
+fn linux_arch(user_agent string) string {
+	ua := user_agent.to_lower()
+	return if ua.contains('aarch64') || ua.contains('arm64') { 'arm64' } else { 'amd64' }
+}
+
+fn (mut app App) download_html(user_agent string) string {
+	version := app.release_file_version() or { '' }
+	mut sizes := map[string]i64{}
+	if version != '' {
+		sizes = app.download_size.get(version)
+	}
+	arch := linux_arch(user_agent)
+	ua := user_agent.to_lower()
+	is_linux := ua.contains('linux') && !ua.contains('android')
+	return home_html.replace(download_size_marker, download_size_label(sizes[dmg_name(version)]))
+		.replace('<!--linux-size-->', download_size_label(sizes[deb_name(version, arch)]))
+		.replace('<!--linux-amd64-size-->', download_size_text(sizes[deb_name(version, 'amd64')]))
+		.replace('<!--linux-arm64-size-->', download_size_text(sizes[deb_name(version, 'arm64')]))
+		.replace('<!--linux-arch-->', arch)
+		.replace('<!--download-os-->', if is_linux { 'linux' } else { 'macos' })
+}
+
+fn download_size_text(bytes i64) string {
+	return if bytes > 0 { format_download_size(bytes) } else { '' }
+}
+
+fn download_size_label(bytes i64) string {
+	if bytes <= 0 { return '' }
 	return '<span class="download-button__size">${format_download_size(bytes)}</span>'
 }
 
@@ -165,55 +207,44 @@ fn format_download_size(bytes i64) string {
 	return '${f64(bytes) / 1_000_000:.0f} MB'
 }
 
-// get returns the known size of version's DMG, or 0 while it is being looked up.
-// A failed lookup is retried after download_size_retry.
-fn (mut size DownloadSize) get(version string) i64 {
+// Fetch all asset sizes together in the background. Failed lookups are retried.
+fn (mut size DownloadSize) get(version string) map[string]i64 {
 	size.lock.lock()
-	defer {
-		size.lock.unlock()
-	}
-	if size.version == version && size.bytes > 0 {
-		return size.bytes
-	}
+	defer { size.lock.unlock() }
+	if size.version == version && size.bytes.len > 0 { return size.bytes.clone() }
 	if !size.pending && (size.version != version || time.since(size.looked_up) > download_size_retry) {
 		size.version = version
-		size.bytes = 0
+		size.bytes = map[string]i64{}
 		size.pending = true
 		size.looked_up = time.now()
 		spawn size.look_up(version)
 	}
-	return 0
+	return map[string]i64{}
 }
 
 fn (mut size DownloadSize) look_up(version string) {
-	bytes := release_dmg_size(version) or {
-		eprintln('Could not look up the size of the Vox ${version} DMG: ${err}')
-		i64(0)
+	bytes := release_asset_sizes(version) or {
+		eprintln('Could not look up Vox ${version} download sizes: ${err}')
+		map[string]i64{}
 	}
 	size.lock.lock()
-	if size.version == version {
-		size.bytes = bytes
-	}
+	if size.version == version { size.bytes = bytes.clone() }
 	size.pending = false
 	size.lock.unlock()
 }
 
-fn release_dmg_size(version string) !i64 {
+fn release_asset_sizes(version string) !map[string]i64 {
 	response := http.fetch(
 		url:    '${releases_api_url}/tags/${version}'
 		header: http.new_header(key: .user_agent, value: 'vox-website')
 	)!
-	if response.status_code != 200 {
-		return error('GitHub returned HTTP ${response.status_code}')
-	}
+	if response.status_code != 200 { return error('GitHub returned HTTP ${response.status_code}') }
 	release := json2.decode[Release](response.body)!
-	name := dmg_name(version)
+	mut sizes := map[string]i64{}
 	for asset in release.assets {
-		if asset.name == name && asset.size > 0 {
-			return asset.size
-		}
+		if asset.size > 0 { sizes[asset.name] = asset.size }
 	}
-	return error('the release has no ${name}')
+	return sizes
 }
 
 // Without a valid version file, /version serves vox_version.
