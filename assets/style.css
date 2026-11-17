@@ -2092,5 +2092,6 @@ a:focus-visible { outline: 3px solid #167dff; outline-offset: 5px; }
 .first-page .download-button__size { margin-left: 12px; color: rgba(255, 255, 255, 0.6); }
 
 .first-page .first-page__download-button--linux { line-height: 1; padding-left: 24px; padding-right: 24px; }
+.first-page .first-page__download-button--arch { line-height: 1; padding-left: 24px; padding-right: 24px; }
 .first-page .download-button__debian { flex: none; margin-right: 10px; }
 .first-page [data-download-os="linux"] .first-page__download-button--linux { order: -1; }

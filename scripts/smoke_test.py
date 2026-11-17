@@ -120,6 +120,11 @@ def main():
                     assert status == 200 and body == b"0.1.0"
                 assert sql("SELECT os_version || '|' || vox_version FROM version_checks") == (
                     "macOS 15.1|0.0.1\nmacOS 15.1|0.0.1")
+                for method in ("GET", "HEAD"):
+                    status, download_headers, _ = request("/download/arch", method=method)
+                    assert status == 302
+                    assert download_headers["Location"] == "https://github.com/vox-browser/vox/releases/latest"
+                    assert download_headers["Cache-Control"] == "no-store"
 
                 for path, mime in [("/assets/style.css", "text/css"),
                                    ("/assets/screen1.png", "image/png"),

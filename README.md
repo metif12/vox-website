@@ -119,3 +119,9 @@ detected from the user agent and refined using browser client hints when availab
 defaulting to amd64. GitHub release asset sizes for both platforms are cached together
 in the background. The Debian open-use logo in `assets/debian.svg` comes from
 <https://www.debian.org/logos/openlogo-nd.svg>.
+
+Arch Linux x86-64 has a separate homepage download button at `/download/arch`.
+It redirects to the same published version's native
+`vox-<version>-1-x86_64.pkg.tar.zst` asset and shares the background asset-size
+cache. Publish and verify the macOS, Debian amd64/arm64 and Arch assets before
+advancing the shared version file, so every advertised download remains valid.

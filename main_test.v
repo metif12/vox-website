@@ -183,3 +183,30 @@ fn test_linux_download_architecture_and_release() {
 	ctx := veb.render_request[App, Context](mut unpublished, http.Request{ url: '/download/linux' })!
 	assert (ctx.res.header.get(.location) or { '' }) == '${releases_url}/latest'
 }
+
+fn test_arch_download_serves_the_native_x86_64_package_and_size() {
+	path := os.join_path(os.vtmp_dir(), 'vox-website-arch-${os.getpid()}')
+	defer { os.rm(path) or {} }
+	os.write_file(path, '0.1.5\n')!
+	mut app := new_app(Config{ version_file: path })!
+	app.download_size.version = '0.1.5'
+	app.download_size.bytes = {
+		arch_package_name('0.1.5'): i64(18_000_000)
+	}
+	for method in [http.Method.get, .head] {
+		ctx := veb.render_request[App, Context](mut app, http.Request{
+			url:    '/download/arch?arch=../../wrong'
+			method: method
+		})!
+		assert ctx.res.status() == .found
+		assert (ctx.res.header.get(.location) or { '' }) == '${releases_url}/download/0.1.5/vox-0.1.5-1-x86_64.pkg.tar.zst'
+		assert (ctx.res.header.get(.cache_control) or { '' }) == 'no-store'
+	}
+	home := app.download_html('Mozilla/5.0 (X11; Linux x86_64)')
+	assert home.contains('href="/download/arch"')
+	assert home.contains('Arch Linux (x86-64)<span class="download-button__size">18 MB</span>')
+	assert !home.contains('<!--arch-size-->')
+	mut unpublished := new_app(Config{})!
+	ctx := veb.render_request[App, Context](mut unpublished, http.Request{ url: '/download/arch' })!
+	assert (ctx.res.header.get(.location) or { '' }) == '${releases_url}/latest'
+}

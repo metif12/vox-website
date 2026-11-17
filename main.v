@@ -172,6 +172,21 @@ fn deb_name(version string, arch string) string {
 	return 'Vox-${version}-${arch}.deb'
 }
 
+@['/download/arch'; get; head]
+pub fn (mut app App) download_arch(mut ctx Context) veb.Result {
+	ctx.set_header(.cache_control, 'no-store')
+	if version := app.release_file_version() {
+		return ctx.redirect('${releases_url}/download/${version}/${arch_package_name(version)}',
+			typ: .found
+		)
+	}
+	return ctx.redirect('${releases_url}/latest', typ: .found)
+}
+
+fn arch_package_name(version string) string {
+	return 'vox-${version}-1-x86_64.pkg.tar.zst'
+}
+
 fn linux_arch(user_agent string) string {
 	ua := user_agent.to_lower()
 	return if ua.contains('aarch64') || ua.contains('arm64') { 'arm64' } else { 'amd64' }
@@ -187,6 +202,7 @@ fn (mut app App) download_html(user_agent string) string {
 	ua := user_agent.to_lower()
 	is_linux := ua.contains('linux') && !ua.contains('android')
 	return home_html.replace(download_size_marker, download_size_label(sizes[dmg_name(version)]))
+		.replace('<!--arch-size-->', download_size_label(sizes[arch_package_name(version)]))
 		.replace('<!--linux-size-->', download_size_label(sizes[deb_name(version, arch)]))
 		.replace('<!--linux-amd64-size-->', download_size_text(sizes[deb_name(version, 'amd64')]))
 		.replace('<!--linux-arm64-size-->', download_size_text(sizes[deb_name(version, 'arm64')]))
