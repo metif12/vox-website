@@ -2,7 +2,7 @@ V ?= v
 TRAFFIC_MODULE_DIR ?= $(HOME)/code/traffic
 VPATH := $(abspath $(TRAFFIC_MODULE_DIR)/..)|@vlib|@vmodules
 VFLAGS ?= -memory-limit 10G
-CROSS_VFLAGS ?= -old-compiler
+CROSS_VFLAGS ?= -b c -memory-limit 10G
 LINUX_LIBPQ ?= $(CURDIR)/build/libpq.so.5
 
 .PHONY: build build-linux run test check fmt smoke

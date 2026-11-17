@@ -64,7 +64,17 @@ Terminate HTTPS at the reverse proxy and forward requests, including `/stats228`
 
 The script cross-compiles a Linux x86-64 production binary locally and uploads only the binary, assets and deployment configuration to a new release directory on `vpm` (`DEPLOY_HOST` overrides that SSH alias). It does not compile on the shared 2 GiB server. `--dry-run` checks SSH and builds locally without changing the server.
 
-The Linux target uses V's compatibility C backend (`CROSS_VFLAGS=-old-compiler`). The script imports the target server's public `libpq.so.5` for linking, so the deployed binary uses Debian's managed PostgreSQL client library. This avoids the incomplete `libpgport` stubs in V's bundled cross-compilation sysroot, which produced malformed SCRAM proofs. Install `libpq5` on the target before deployment. To build without SSH, set `LINUX_LIBPQ` to a compatible Linux library. Compiler/link commands and library/binary hashes are recorded in `build/linux-build.json`.
+The Linux target uses V's current C backend with `-memory-limit 10G` and literal
+`-prod`. The script imports the target server's public `libpq.so.5` for linking,
+so the deployed binary uses Debian's managed PostgreSQL client library. This
+avoids the incomplete `libpgport` stubs in V's bundled cross-compilation sysroot,
+which produced malformed SCRAM proofs. Install `libpq5` on the target before
+deployment. To build without SSH, set `LINUX_LIBPQ` to a compatible Linux library.
+Compiler/link commands and library/binary hashes are recorded in
+`build/linux-build.json`. C debug mode retains the compiler's intermediate
+objects until relinking completes; the helper then removes that temporary
+directory. `python3 -m unittest discover -s scripts -p build_linux_test.py` checks
+both current and legacy linker output and PostgreSQL stub removal.
 
 The mbedTLS build uses portable integer division to avoid an unresolved cross-linker runtime symbol. Password authentication and TLS support remain enabled. The build helper reuses the linker command printed by V, replacing the static PostgreSQL library and its stubs with the actual target library, and fails if it cannot find that command.
 
