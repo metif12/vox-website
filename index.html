@@ -20,7 +20,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=20261107b">
 <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192.png?v=20261107b">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=20261107b">
-<link rel="stylesheet" href="/assets/style.css?v=20261123stack">
+<link rel="stylesheet" href="/assets/style.css?v=20261123factsrow">
 <script>try{document.documentElement.dataset.theme=localStorage.getItem('vox-theme')||'dark'}catch(e){document.documentElement.dataset.theme='dark'}</script>
 </head>
 <body>
@@ -87,13 +87,30 @@
 </section>
 
 <section class="engine section" id="engine">
-  <div class="shell engine__grid">
-    <div class="engine__copy">
+  <div class="shell">
+    <div class="engine__panel">
+      <p class="eyebrow">The engine</p>
       <h2>A completely new browser engine built 100% in V</h2>
-      <p>Vox focuses on performance and minimal resource usage. It will make your device feel snappy again.</p>
-      <p>Vox is a heavily modified translated fork of an old C++ Ladybird codebase from 2026.03.</p>
-      <p class="engine__detail">Using Hacker News as a test (JS disabled): 15ms versus 60ms in Chrome, a quarter of the memory, and 40% less CPU.</p>
-      <p>Vox is still in alpha. Builds for Windows, macOS and Linux are available. If you want to contribute, <a href="https://discord.gg/SfDWsF7FNr" rel="noopener noreferrer">join our Discord</a>.</p>
+      <div class="engine__body">
+        <div class="engine__lead">
+          <p>Vox focuses on performance and minimal resource usage. It will make your device feel snappy again.</p>
+          <p>Vox is a heavily modified translated fork of an old C++ Ladybird codebase from 2026.03.</p>
+        </div>
+        <div class="engine__facts">
+          <article>
+            <span>01</span>
+            <div><strong>15ms versus 60ms</strong><p>Hacker News with JavaScript disabled, compared with Chrome.</p></div>
+          </article>
+          <article>
+            <span>02</span>
+            <div><strong>Less memory and CPU</strong><p>A quarter of Firefox's RAM and 40% less CPU in the same test.</p></div>
+          </article>
+          <article>
+            <span>03</span>
+            <div><strong>Alpha, in the open</strong><p>Builds for Windows, macOS and Linux. <a href="https://discord.gg/SfDWsF7FNr" rel="noopener noreferrer">Join our Discord</a> to contribute.</p></div>
+          </article>
+        </div>
+      </div>
     </div>
   </div>
 </section>
