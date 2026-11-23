@@ -153,7 +153,7 @@ figure, h1, h2, h3, p { margin: 0; }
 .site-nav__cta { background: var(--accent); color: var(--accent-text) !important; }
 .site-nav__cta:hover { background: color-mix(in srgb, var(--accent) 85%, #fff) !important; color: var(--accent-text) !important; }
 @media (max-width: 620px) {
-  .site-nav a:not(.site-nav__cta) { display: none; }
+  .site-nav a:not(.site-nav__cta):not(.site-nav__github) { display: none; }
 }
 
 /* Hero */
