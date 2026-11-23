@@ -20,7 +20,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=20261107b">
 <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192.png?v=20261107b">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=20261107b">
-<link rel="stylesheet" href="/assets/style.css?v=20261123navgithub">
+<link rel="stylesheet" href="/assets/style.css?v=20261123features">
 <script>try{document.documentElement.dataset.theme=localStorage.getItem('vox-theme')||'dark'}catch(e){document.documentElement.dataset.theme='dark'}</script>
 </head>
 <body>
@@ -132,45 +132,54 @@
 <section class="features section" id="features">
   <div class="shell">
     <h2>Everything you expect. Less of what you do not.</h2>
-    <div class="bento">
-      <article class="bento__cell bento__cell--lead">
-        <span class="bento__index">01</span>
-        <h3>Pixel-perfect parity</h3>
-        <p>Popular sites are tested in Vox and Chrome and compared down to the last pixel.</p>
+    <div class="feature-grid">
+      <article class="feature-lead">
+        <div class="feature-lead__copy">
+          <span class="feature-tag">Rendering</span>
+          <h3>Pixel-perfect parity</h3>
+          <p>Popular sites are tested in Vox and Chrome and compared down to the last pixel.</p>
+        </div>
+        <div class="feature-lead__strip">
+          <img src="/assets/runs-vlang.png?v=1" width="800" height="684" alt="Vox browser displaying vlang.io">
+          <img src="/assets/runs-cnn.png?v=1" width="800" height="684" alt="Vox browser displaying CNN">
+          <img src="/assets/runs-discord.png?v=1" width="800" height="684" alt="Vox browser displaying Discord">
+        </div>
       </article>
-      <article class="bento__cell bento__cell--accent">
-        <span class="bento__index">02</span>
-        <h3>V8 JavaScript</h3>
+      <article class="feature-v8">
+        <span class="feature-tag">Runtime</span>
+        <strong class="feature-v8__mark" aria-hidden="true">V8</strong>
+        <h3>A fast JavaScript engine</h3>
         <p>A highly optimized engine keeps existing websites compatible and fast.</p>
       </article>
-      <article class="bento__cell">
-        <span class="bento__index">03</span>
-        <h3>V instead of JavaScript</h3>
-        <p>A future path to scripting pages in V for better performance and far lower RAM use.</p>
+      <div class="feature-stack">
+        <article>
+          <span class="feature-tag">Scripting</span>
+          <h3>V instead of JavaScript</h3>
+          <p>A future path to scripting pages in V for better performance and far lower RAM use.</p>
+        </article>
+        <article>
+          <span class="feature-tag">Embedding</span>
+          <h3>Headless mode</h3>
+          <p>A light, fast alternative to Electron for cross-platform apps, with a headless mode for developers.</p>
+        </article>
+        <article>
+          <span class="feature-tag">Extensions</span>
+          <h3>Chrome addons</h3>
+          <p>The goal is for Chrome extensions to work automatically in Vox.</p>
+        </article>
+      </div>
+      <article class="feature-privacy">
+        <div>
+          <span class="feature-tag">Privacy</span>
+          <h3>No ads, permanently</h3>
+          <p>An efficient built-in blocker based on uBlock Origin, plus automatic cookie warning dismissal.</p>
+        </div>
+        <ul class="feature-chips">
+          <li>Mouse gestures</li>
+          <li>Vertical tabs</li>
+          <li>Vim bindings</li>
+        </ul>
       </article>
-      <article class="bento__cell bento__cell--image">
-        <img src="/assets/runs-vlang.png?v=1" width="800" height="684" alt="Vox browser displaying vlang.io" loading="lazy">
-      </article>
-      <article class="bento__cell bento__cell--wide">
-        <span class="bento__index">04</span>
-        <h3>Embeddable and headless</h3>
-        <p>A light, fast alternative to Electron for cross-platform apps, with a headless mode for developers.</p>
-      </article>
-      <article class="bento__cell">
-        <span class="bento__index">05</span>
-        <h3>No ads, permanently</h3>
-        <p>An efficient built-in blocker based on uBlock Origin, plus automatic cookie warning dismissal.</p>
-      </article>
-      <article class="bento__cell">
-        <span class="bento__index">06</span>
-        <h3>Chrome addons</h3>
-        <p>The goal is for Chrome extensions to work automatically in Vox.</p>
-      </article>
-    </div>
-    <div class="minor-features">
-      <div><h3>Mouse gestures</h3><p>Back, forward, close tabs and reload with the mouse, like old Opera.</p></div>
-      <div><h3>Vertical tabs</h3><p>A settings option moves tabs to the side of the window.</p></div>
-      <div><h3>Keyboard navigation</h3><p>Vim bindings for moving through the browser.</p></div>
     </div>
   </div>
 </section>
