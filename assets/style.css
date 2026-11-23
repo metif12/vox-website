@@ -167,17 +167,7 @@ figure, h1, h2, h3, p { margin: 0; }
 .download-button__size { color: var(--muted); font-weight: 500; font-size: 12px; }
 
 .hero__visual { margin: 0; }
-.browser {
-  border: 1px solid var(--line);
-  border-radius: var(--radius-card);
-  background: var(--surface);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-}
-.browser__bar { display: flex; gap: 6px; align-items: center; height: 36px; padding: 0 14px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
-.browser__bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
-.browser__bar i:first-child { background: var(--accent); }
-.browser img { display: block; width: 100%; height: auto; }
+.hero__visual img { display: block; width: 100%; height: auto; aspect-ratio: 2078 / 1628; border-radius: var(--radius-card); }
 .hero__visual figcaption { margin-top: 12px; color: var(--muted); font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: 0.12em; }
 
 /* Metrics */
