@@ -7,7 +7,13 @@
   const toggle = block.querySelector('.download-bar__toggle');
   const mac = block.querySelector('.first-page__download-button--macos');
   const linux = block.querySelector('.first-page__download-button--linux');
+  const arch = block.querySelector('.first-page__download-button--arch');
   if (!slot || !options || !toggle || !mac || !linux) return;
+
+  // All platform buttons open the published latest release page. The source
+  // hrefs stay as V routes so server-side rendering and its tests are unchanged.
+  const latest = 'https://github.com/vox-browser/vox/releases/latest';
+  [mac, linux, arch].filter(Boolean).forEach(function (link) { link.href = latest; });
 
   const ua = navigator.userAgent;
   const platform = navigator.userAgentData?.platform || navigator.platform || '';
@@ -21,7 +27,6 @@
 
   function setArchitecture(architecture) {
     const arch = /arm|aarch64/i.test(architecture) ? 'arm64' : 'amd64';
-    linux.href = `/download/linux?arch=${arch}`;
     linux.querySelector('.download-button__size')?.remove();
     const size = linux.dataset[`${arch}Size`];
     if (size) {
