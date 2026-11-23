@@ -20,7 +20,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=20261107b">
 <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192.png?v=20261107b">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=20261107b">
-<link rel="stylesheet" href="/assets/style.css?v=20261123v2">
+<link rel="stylesheet" href="/assets/style.css?v=20261123group">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -50,10 +50,15 @@
       <h1 class="hero__title">Vox</h1>
       <p class="hero__lede">A new open-source browser engine in V. Compiles in &lt;2s on M5 Max.</p>
       <div class="hero__actions first-page__download-block" data-download-os="<!--download-os-->">
-        <a href="/download/macos" class="btn btn--primary first-page__download-button first-page__download-button--macos" rel="noopener noreferrer"><svg class="btn__icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>Download for macOS<!--dmg-size--></a>
-        <a href="/download/linux?arch=<!--linux-arch-->" class="btn btn--secondary first-page__download-button first-page__download-button--linux" data-amd64-size="<!--linux-amd64-size-->" data-arm64-size="<!--linux-arm64-size-->" rel="noopener noreferrer"><img class="btn__icon btn__icon--debian" src="/assets/debian.svg?v=20261117b" width="19" height="24" alt="">Linux (.deb)<!--linux-size--></a>
-        <a href="/download/arch" class="btn btn--secondary first-page__download-button first-page__download-button--arch" rel="noopener noreferrer">Arch Linux (x86-64)<!--arch-size--></a>
-        <a href="https://github.com/vox-browser/vox" class="repo-link" rel="noopener noreferrer">github.com/vox-browser/vox</a>
+        <div class="download-bar__group">
+          <div class="download-bar__primary" data-primary-slot><a href="/download/macos" class="btn btn--primary first-page__download-button first-page__download-button--macos" rel="noopener noreferrer"><svg class="btn__icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>Download for macOS<!--dmg-size--></a></div>
+          <div class="download-bar__options" id="download-options" hidden>
+            <a href="/download/linux?arch=<!--linux-arch-->" class="first-page__download-button first-page__download-button--linux" data-amd64-size="<!--linux-amd64-size-->" data-arm64-size="<!--linux-arm64-size-->" rel="noopener noreferrer"><img class="btn__icon btn__icon--debian" src="/assets/debian.svg?v=20261117b" width="19" height="24" alt="">Linux (.deb)<!--linux-size--></a>
+            <a href="/download/arch" class="first-page__download-button first-page__download-button--arch" rel="noopener noreferrer">Arch Linux (x86-64)<!--arch-size--></a>
+          </div>
+          <button type="button" class="download-bar__toggle" aria-label="Other downloads" aria-expanded="false" aria-controls="download-options"><span class="download-bar__chevron" aria-hidden="true"></span></button>
+        </div>
+        <a href="https://github.com/vox-browser/vox" class="btn btn--secondary download-bar__repo" rel="noopener noreferrer"><svg class="btn__icon" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38v-1.49c-2.01.44-2.43-.85-2.43-.85-.33-.84-.8-1.06-.8-1.06-.55-.38.04-.37.04-.37.61.04.93.63.93.63.54.93 1.42.66 1.76.5.06-.39.21-.66.38-.81-1.61-.18-3.3-.8-3.3-3.59 0-.79.28-1.44.75-1.95-.08-.18-.33-.92.07-1.92 0 0 .61-.2 2 .75A6.9 6.9 0 0 1 8 4.92c.61 0 1.22.08 1.79.24 1.39-.95 2-.75 2-.75.4 1 .15 1.74.07 1.92.47.51.75 1.16.75 1.95 0 2.8-1.7 3.4-3.31 3.58.22.19.42.55.42 1.11v1.65c0 .21.14.45.55.38A8 8 0 0 0 8 0Z"/></svg>GitHub</a>
       </div>
     </div>
     <figure class="hero__visual">
@@ -253,6 +258,6 @@ document.documentElement.classList.add('js');
   }, 2500);
 })();
 </script>
-<script src="/assets/downloads.js?v=20261117a"></script>
+<script src="/assets/downloads.js?v=20261123group"></script>
 </body>
 </html>
