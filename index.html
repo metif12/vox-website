@@ -23,9 +23,10 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=20261107b">
     <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192.png?v=20261107b">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=20261107b">
-    <link rel="stylesheet" href="/assets/style.css?v=20261117arch">
+    <link rel="stylesheet" href="/assets/style.css?v=20261123polish">
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 
 <div class="sub-header">
     <div class="header__inner">
@@ -113,7 +114,7 @@
 Vox is a heavily modified translated fork of an old C++ Ladybird codebase from 2026.03.
 </p>
 
-            <div class="chapter__text" style="color: #646567; margin-bottom:0">
+            <div class="chapter__text chapter__text--muted">
 				Using Hacker News as a test (JS disabled):
 				<ul>
 				<li>4x faster rendering than Chrome (15ms vs 60ms)</li>
@@ -125,7 +126,7 @@ Vox is a heavily modified translated fork of an old C++ Ladybird codebase from 2
 
                 Vox is still in alpha. <br>Builds for Windows/macOS/Linux are available.
 				<br><br>
-				If you're interested in contributing, <a href="https://discord.gg/SfDWsF7FNr" target="_blank" rel="noopener noreferrer" style="color: var(--dark-blue); text-decoration: underline;">join our Discord</a> to join the development.
+				If you're interested in contributing, <a href="https://discord.gg/SfDWsF7FNr" target="_blank" rel="noopener noreferrer" class="inline-link">join our Discord</a> to join the development.
             </div>
         </div>
         <div class="chapter__image-col with-big-title">
@@ -141,7 +142,7 @@ Vox is a heavily modified translated fork of an old C++ Ladybird codebase from 2
         <p class="chapter__text">Sites where Vox uses fewer CPU instructions than Brave, plus ChatGPT and other news and forum sites Vox renders.</p>
         <div class="runs-on-vox__carousel" aria-roledescription="carousel" aria-label="Sites running on Vox">
             <button type="button" class="runs-on-vox__nav runs-on-vox__nav--prev" aria-label="Previous">&#8249;</button>
-            <div class="runs-on-vox__grid" tabindex="0">
+            <div class="runs-on-vox__grid" tabindex="0" aria-label="Sites running on Vox">
             <figure class="runs-on-vox__item">
                 <img src="/assets/screen1.png?v=20261104d" width="1252" height="1120" alt="Vox browser displaying Hacker News" loading="lazy">
                 <figcaption>Hacker News</figcaption>
@@ -211,6 +212,7 @@ Vox is a heavily modified translated fork of an old C++ Ladybird codebase from 2
                 <figcaption>Discord</figcaption>
             </figure>
             </div>
+            <div class="runs-on-vox__progress" aria-hidden="true"><span></span></div>
             <button type="button" class="runs-on-vox__nav runs-on-vox__nav--next" aria-label="Next">&#8250;</button>
         </div>
     </div>
@@ -467,16 +469,35 @@ Vox is a heavily modified translated fork of an old C++ Ladybird codebase from 2
     var carousel = document.querySelector('.runs-on-vox__carousel');
     if (!carousel) return;
     var track = carousel.querySelector('.runs-on-vox__grid');
+    var progress = carousel.querySelector('.runs-on-vox__progress span');
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    function updateProgress() {
+        if (!progress) return;
+        var max = track.scrollWidth - track.clientWidth;
+        var visible = max > 0 ? track.clientWidth / track.scrollWidth : 1;
+        var ratio = max > 0 ? track.scrollLeft / max : 0;
+        progress.style.width = Math.round(visible * 100) + '%';
+        progress.style.marginLeft = (ratio * (100 - visible * 100)) + '%';
+    }
+
     function step(dir) {
         var item = track.querySelector('.runs-on-vox__item');
-        track.scrollBy({ left: dir * (item.offsetWidth + 24), behavior: 'smooth' });
+        track.scrollBy({
+            left: dir * (item.offsetWidth + 24),
+            behavior: reduceMotion.matches ? 'auto' : 'smooth'
+        });
     }
+
     carousel.querySelector('.runs-on-vox__nav--prev').addEventListener('click', function () { step(-1); });
     carousel.querySelector('.runs-on-vox__nav--next').addEventListener('click', function () { step(1); });
     track.addEventListener('keydown', function (e) {
         if (e.key === 'ArrowLeft') { step(-1); e.preventDefault(); }
         if (e.key === 'ArrowRight') { step(1); e.preventDefault(); }
     });
+    track.addEventListener('scroll', updateProgress, { passive: true });
+    window.addEventListener('resize', updateProgress);
+    updateProgress();
 })();
 </script>
 </main>
