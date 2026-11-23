@@ -291,16 +291,16 @@ button {
 }
 
 .chapter.light {
-  background: var(--paper);
+  background: rgba(255, 255, 255, 0.86);
   color: var(--ink);
 }
 
 .chapter.light.second-page {
-  background: var(--paper-soft);
+  background: rgba(244, 244, 244, 0.86);
 }
 
 .chapter.dark {
-  background: var(--panel-dark);
+  background: rgba(30, 31, 34, 0.94);
   color: #fff;
 }
 
@@ -955,4 +955,165 @@ footer .copyright-line {
   width: 40px;
   background: linear-gradient(90deg, transparent, var(--paper));
   pointer-events: none;
+}
+
+/* Ambient backdrop and elevated surfaces --------------------------------- */
+
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--paper);
+}
+
+.ambient__glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.4;
+}
+
+.ambient__glow--a {
+  width: 52vw;
+  height: 52vw;
+  left: -14vw;
+  top: -14vw;
+  background: radial-gradient(circle, rgba(96, 89, 247, 0.6), transparent 70%);
+  animation: drift-a 18s ease-in-out infinite alternate;
+}
+
+.ambient__glow--b {
+  width: 46vw;
+  height: 46vw;
+  right: -12vw;
+  top: 28vh;
+  background: radial-gradient(circle, rgba(22, 125, 255, 0.4), transparent 70%);
+  animation: drift-b 22s ease-in-out infinite alternate;
+}
+
+.ambient__grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(25, 25, 28, 0.09) 1px, transparent 1px);
+  background-size: 28px 28px;
+  -webkit-mask-image: linear-gradient(to bottom, #000, transparent 75%);
+  mask-image: linear-gradient(to bottom, #000, transparent 75%);
+  opacity: 0.55;
+}
+
+main,
+footer {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes drift-a {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(6vw, 8vh, 0) scale(1.15); }
+}
+
+@keyframes drift-b {
+  from { transform: translate3d(0, 0, 0) scale(1.1); }
+  to { transform: translate3d(-8vw, -6vh, 0) scale(1); }
+}
+
+@keyframes chip-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(96, 89, 247, 0.28); }
+  50% { box-shadow: 0 0 0 9px rgba(96, 89, 247, 0); }
+}
+
+@keyframes stat-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.9); }
+  to { opacity: 1; transform: none; }
+}
+
+.hero__word {
+  background: linear-gradient(115deg, #19191c 25%, #4b43cc 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.title__beta-tag {
+  border-color: rgba(96, 89, 247, 0.55);
+  color: var(--purple);
+  animation: chip-pulse 2.8s ease-in-out infinite;
+}
+
+.first-page__download-block {
+  padding: 14px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 14px 34px rgba(25, 25, 28, 0.08);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.stat-number {
+  color: var(--purple);
+  font-weight: 700;
+}
+
+.chapter.is-visible .stat-number {
+  animation: stat-pop 0.7s both;
+}
+
+.chapter.two-column-layout .chapter__image-col img.full-height {
+  transform: translateY(calc(var(--hero-shift, 0) * 1px));
+}
+
+.chapter__text-image-block {
+  position: relative;
+  isolation: isolate;
+}
+
+.chapter__text-image-block::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgba(96, 89, 247, 0.16), transparent 65%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.chapter__text-image-block:hover::after {
+  opacity: 1;
+}
+
+.runs-on-vox__item {
+  transition: transform 0.25s ease;
+}
+
+.runs-on-vox__item:hover {
+  transform: translateY(-4px);
+}
+
+.runs-on-vox__item img {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.runs-on-vox__item:hover img {
+  border-color: rgba(96, 89, 247, 0.5);
+  box-shadow: 0 12px 24px rgba(25, 25, 28, 0.14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient__glow,
+  .title__beta-tag,
+  .chapter.is-visible .stat-number {
+    animation: none;
+  }
+}
+
+@media print {
+  html.js-motion .chapter:not(.is-visible) > .chapter_inner {
+    opacity: 1;
+    transform: none;
+  }
 }

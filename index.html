@@ -23,9 +23,10 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=20261107b">
     <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192.png?v=20261107b">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=20261107b">
-    <link rel="stylesheet" href="/assets/style.css?v=20261123fx">
+    <link rel="stylesheet" href="/assets/style.css?v=20261123bold">
 </head>
 <body>
+<div class="ambient" aria-hidden="true"><span class="ambient__glow ambient__glow--a"></span><span class="ambient__glow ambient__glow--b"></span><span class="ambient__grid"></span></div>
 <div class="scroll-progress" aria-hidden="true"></div>
 <a class="skip-link" href="#main">Skip to content</a>
 
@@ -85,7 +86,7 @@
         <h1 class="first-page__title">
             <span>
                 <span class="title__beta-tag">Alpha</span>
-                Vox
+                <span class="hero__word">Vox</span>
             </span>
         </h1>
         <p class="first-page__description">A new open-source browser engine in V.<br>Compiles in <2s on M5 Max.</p>
@@ -118,9 +119,9 @@ Vox is a heavily modified translated fork of an old C++ Ladybird codebase from 2
             <div class="chapter__text chapter__text--muted">
 				Using Hacker News as a test (JS disabled):
 				<ul>
-				<li>4x faster rendering than Chrome (15ms vs 60ms)</li>
-				<li>4x less RAM usage than FireFox</li>
-				<li>40% less CPU usage than FireFox</li>
+				<li><span class="stat-number">4x</span> faster rendering than Chrome (15ms vs 60ms)</li>
+				<li><span class="stat-number">4x</span> less RAM usage than FireFox</li>
+				<li><span class="stat-number">40%</span> less CPU usage than FireFox</li>
 				</ul>
 
                 <br>
@@ -572,6 +573,8 @@ Vox is a heavily modified translated fork of an old C++ Ladybird codebase from 2
         progress.style.width = (max > 0 ? window.scrollY / max * 100 : 0) + '%';
         header.classList.toggle('is-scrolled', window.scrollY > 8);
         toTop.classList.toggle('is-visible', window.scrollY > 500);
+        var heroImage = document.querySelector('.chapter.two-column-layout img.full-height');
+        if (heroImage) heroImage.style.setProperty('--hero-shift', Math.max(-40, -window.scrollY * 0.03));
         if (track) {
             prev.disabled = track.scrollLeft <= 2;
             next.disabled = track.scrollLeft >= track.scrollWidth - track.clientWidth - 2;
@@ -596,6 +599,9 @@ Vox is a heavily modified translated fork of an old C++ Ladybird codebase from 2
             });
         }, { threshold: 0.05, rootMargin: '0px 0px -10% 0px' });
         document.querySelectorAll('.chapter').forEach(function (section) { observer.observe(section); });
+        setTimeout(function () {
+            document.querySelectorAll('.chapter').forEach(function (section) { section.classList.add('is-visible'); });
+        }, 2500);
     }
 
     if (track) {
@@ -620,6 +626,14 @@ Vox is a heavily modified translated fork of an old C++ Ladybird codebase from 2
         track.addEventListener('pointerup', endDrag);
         track.addEventListener('pointercancel', endDrag);
     }
+
+    document.querySelectorAll('.chapter__text-image-block').forEach(function (card) {
+        card.addEventListener('pointermove', function (e) {
+            var box = card.getBoundingClientRect();
+            card.style.setProperty('--mx', (e.clientX - box.left) + 'px');
+            card.style.setProperty('--my', (e.clientY - box.top) + 'px');
+        });
+    });
 })();
 </script>
 <script src="/assets/downloads.js?v=20261117a"></script>
