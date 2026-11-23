@@ -20,7 +20,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=20261107b">
 <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192.png?v=20261107b">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=20261107b">
-<link rel="stylesheet" href="/assets/style.css?v=20261123extrasfix">
+<link rel="stylesheet" href="/assets/style.css?v=20261123stack">
 <script>try{document.documentElement.dataset.theme=localStorage.getItem('vox-theme')||'dark'}catch(e){document.documentElement.dataset.theme='dark'}</script>
 </head>
 <body>
@@ -68,8 +68,12 @@
       </div>
     </div>
     <figure class="hero__visual">
-      <button type="button" class="hero__open" aria-label="Open screenshot gallery"><img src="/assets/hero-chatgpt.png?v=1" width="2078" height="1628" alt="Vox browser displaying ChatGPT" fetchpriority="high"></button>
-      <figcaption>Vox rendering chatgpt.com</figcaption>
+      <div class="hero__stack" aria-roledescription="carousel" aria-label="Vox screenshots">
+        <button type="button" class="hero__slide is-active" aria-label="Open ChatGPT screenshot in gallery"><img src="/assets/hero-chatgpt.png?v=1" width="2078" height="1628" alt="Vox browser displaying ChatGPT" fetchpriority="high"></button>
+        <button type="button" class="hero__slide" aria-label="Open Hacker News screenshot in gallery"><img src="/assets/screen1.png?v=20261104d" width="1252" height="1120" alt="Vox browser displaying Hacker News"></button>
+        <button type="button" class="hero__slide" aria-label="Open Discord screenshot in gallery"><img src="/assets/runs-discord.png?v=1" width="800" height="684" alt="Vox browser displaying Discord"></button>
+      </div>
+      <figcaption class="hero__caption">Vox rendering chatgpt.com</figcaption>
     </figure>
   </div>
 </section>
@@ -91,10 +95,6 @@
       <p class="engine__detail">Using Hacker News as a test (JS disabled): 15ms versus 60ms in Chrome, a quarter of the memory, and 40% less CPU.</p>
       <p>Vox is still in alpha. Builds for Windows, macOS and Linux are available. If you want to contribute, <a href="https://discord.gg/SfDWsF7FNr" rel="noopener noreferrer">join our Discord</a>.</p>
     </div>
-    <figure class="engine__visual">
-      <img src="/assets/screen1.png?v=20261104d" width="1252" height="1120" alt="Vox browser displaying Hacker News" loading="lazy">
-      <figcaption>Hacker News in Vox</figcaption>
-    </figure>
   </div>
 </section>
 
@@ -374,9 +374,14 @@ document.documentElement.classList.add('js');
   var caption = dialog.querySelector('.lightbox__caption');
   var counter = dialog.querySelector('.lightbox__count');
   var figures = Array.prototype.slice.call(document.querySelectorAll('.runs-on-vox__item'));
-  var opener = document.querySelector('.hero__open');
-  var entries = [{ src: opener.querySelector('img').src, label: 'Vox rendering chatgpt.com' }];
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.hero__slide'));
+  var heroCaption = document.querySelector('.hero__caption');
+  var heroLabels = ['Vox rendering chatgpt.com', 'Vox rendering Hacker News', 'Vox rendering Discord'];
+  var entries = slides.map(function (slide, index) {
+    return { src: slide.querySelector('img').src, label: heroLabels[index] || slide.getAttribute('aria-label') };
+  });
   var buttons = [];
+  var extraOpeners = [];
   figures.forEach(function (figure) {
     var img = figure.querySelector('img');
     var label = 'View ' + figure.querySelector('figcaption').textContent + ' screenshot';
@@ -388,6 +393,17 @@ document.documentElement.classList.add('js');
     button.appendChild(img);
     buttons.push(button);
     entries.push({ src: img.src, label: 'Vox rendering ' + figure.querySelector('figcaption').textContent });
+  });
+  Array.prototype.slice.call(document.querySelectorAll('.feature-lead__strip img')).forEach(function (img) {
+    var label = img.alt.replace('Vox browser displaying ', '');
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'feature-thumb';
+    button.setAttribute('aria-label', 'View ' + label + ' screenshot');
+    img.parentNode.insertBefore(button, img);
+    button.appendChild(img);
+    extraOpeners.push({ button: button, index: entries.length });
+    entries.push({ src: img.src, label: 'Vox rendering ' + label });
   });
   var current = 0;
 
@@ -405,10 +421,35 @@ document.documentElement.classList.add('js');
     else dialog.setAttribute('open', '');
   }
 
-  opener.addEventListener('click', function () { open(0); });
-  buttons.forEach(function (button, index) {
-    button.addEventListener('click', function () { open(index + 1); });
+  var slideIndex = 0;
+  var paused = false;
+  function setSlide(index) {
+    slideIndex = (index + slides.length) % slides.length;
+    slides.forEach(function (slide, i) { slide.classList.toggle('is-active', i === slideIndex); });
+    heroCaption.textContent = entries[slideIndex].label;
+  }
+
+  slides.forEach(function (slide, index) {
+    slide.addEventListener('click', function () { open(index); });
   });
+  buttons.forEach(function (button, index) {
+    button.addEventListener('click', function () { open(index + slides.length); });
+  });
+  extraOpeners.forEach(function (item) {
+    item.button.addEventListener('click', function () { open(item.index); });
+  });
+
+  if (slides.length > 1 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var stack = document.querySelector('.hero__stack');
+    stack.addEventListener('pointerenter', function () { paused = true; });
+    stack.addEventListener('pointerleave', function () { paused = false; });
+    stack.addEventListener('focusin', function () { paused = true; });
+    stack.addEventListener('focusout', function () { paused = false; });
+    setInterval(function () {
+      if (!paused && !dialog.open) setSlide(slideIndex + 1);
+    }, 4200);
+  }
+  setSlide(0);
 
   dialog.querySelector('.lightbox__close').addEventListener('click', function () { dialog.close(); });
   dialog.querySelector('.lightbox__nav--prev').addEventListener('click', function () { show(current - 1); });
