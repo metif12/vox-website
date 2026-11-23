@@ -20,7 +20,8 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=20261107b">
 <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192.png?v=20261107b">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=20261107b">
-<link rel="stylesheet" href="/assets/style.css?v=20261123clean">
+<link rel="stylesheet" href="/assets/style.css?v=20261123icons">
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('vox-theme')||'dark'}catch(e){document.documentElement.dataset.theme='dark'}</script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -37,6 +38,10 @@
       <a href="#engine">Engine</a>
       <a href="#gallery">Sites</a>
       <a href="#features">Features</a>
+      <button type="button" class="theme-toggle" aria-label="Switch to light theme" aria-pressed="false">
+        <svg class="icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg>
+      </button>
       <a class="site-nav__cta" href="#download">Download</a>
     </nav>
   </div>
@@ -62,7 +67,7 @@
       </div>
     </div>
     <figure class="hero__visual">
-      <img src="/assets/hero-chatgpt.png?v=1" width="2078" height="1628" alt="Vox browser displaying ChatGPT" fetchpriority="high">
+      <button type="button" class="hero__open" aria-label="Open screenshot gallery"><img src="/assets/hero-chatgpt.png?v=1" width="2078" height="1628" alt="Vox browser displaying ChatGPT" fetchpriority="high"></button>
       <figcaption>Vox rendering chatgpt.com</figcaption>
     </figure>
   </div>
@@ -202,6 +207,21 @@
 
 <button type="button" class="back-to-top" aria-label="Back to top">&#8593;</button>
 
+<dialog class="lightbox" id="screenshot-lightbox" aria-label="Screenshot gallery">
+  <div class="lightbox__panel">
+    <div class="lightbox__bar">
+      <span class="lightbox__count" aria-live="polite"></span>
+      <button type="button" class="lightbox__close" aria-label="Close gallery">&#215;</button>
+    </div>
+    <div class="lightbox__stage">
+      <button type="button" class="lightbox__nav lightbox__nav--prev" aria-label="Previous screenshot">&#8249;</button>
+      <img class="lightbox__image" alt="">
+      <button type="button" class="lightbox__nav lightbox__nav--next" aria-label="Next screenshot">&#8250;</button>
+    </div>
+    <p class="lightbox__caption"></p>
+  </div>
+</dialog>
+
 <script>
 document.documentElement.classList.add('js');
 (function () {
@@ -253,6 +273,86 @@ document.documentElement.classList.add('js');
   setTimeout(function () {
     sections.forEach(function (section) { section.classList.add('is-visible'); });
   }, 2500);
+})();
+</script>
+<script>
+(function () {
+  var dialog = document.getElementById('screenshot-lightbox');
+  var image = dialog.querySelector('.lightbox__image');
+  var caption = dialog.querySelector('.lightbox__caption');
+  var counter = dialog.querySelector('.lightbox__count');
+  var figures = Array.prototype.slice.call(document.querySelectorAll('.runs-on-vox__item'));
+  var opener = document.querySelector('.hero__open');
+  var entries = [{ src: opener.querySelector('img').src, label: 'Vox rendering chatgpt.com' }];
+  var buttons = [];
+  figures.forEach(function (figure) {
+    var img = figure.querySelector('img');
+    var label = 'View ' + figure.querySelector('figcaption').textContent + ' screenshot';
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'runs-on-vox__open';
+    button.setAttribute('aria-label', label);
+    img.parentNode.insertBefore(button, img);
+    button.appendChild(img);
+    buttons.push(button);
+    entries.push({ src: img.src, label: 'Vox rendering ' + figure.querySelector('figcaption').textContent });
+  });
+  var current = 0;
+
+  function show(index) {
+    current = (index + entries.length) % entries.length;
+    image.src = entries[current].src;
+    image.alt = entries[current].label;
+    caption.textContent = entries[current].label;
+    counter.textContent = (current + 1) + ' / ' + entries.length;
+  }
+
+  function open(index) {
+    show(index);
+    if (typeof dialog.showModal === 'function') dialog.showModal();
+    else dialog.setAttribute('open', '');
+  }
+
+  opener.addEventListener('click', function () { open(0); });
+  buttons.forEach(function (button, index) {
+    button.addEventListener('click', function () { open(index + 1); });
+  });
+
+  dialog.querySelector('.lightbox__close').addEventListener('click', function () { dialog.close(); });
+  dialog.querySelector('.lightbox__nav--prev').addEventListener('click', function () { show(current - 1); });
+  dialog.querySelector('.lightbox__nav--next').addEventListener('click', function () { show(current + 1); });
+  dialog.addEventListener('click', function (event) { if (event.target === dialog) dialog.close(); });
+  dialog.addEventListener('keydown', function (event) {
+    if (event.key === 'ArrowLeft') { show(current - 1); event.preventDefault(); }
+    if (event.key === 'ArrowRight') { show(current + 1); event.preventDefault(); }
+  });
+})();
+</script>
+<script>
+(function () {
+  var button = document.querySelector('.theme-toggle');
+  var root = document.documentElement;
+  function sync() {
+    var light = root.dataset.theme === 'light';
+    button.setAttribute('aria-label', 'Switch to ' + (light ? 'dark' : 'light') + ' theme');
+    button.setAttribute('aria-pressed', String(light));
+  }
+  button.addEventListener('click', function () {
+    root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light';
+    try { localStorage.setItem('vox-theme', root.dataset.theme); } catch (e) {}
+    sync();
+  });
+  sync();
+})();
+</script>
+<script>
+(function () {
+  var sentinel = document.querySelector('.top-sentinel');
+  var header = document.querySelector('.site-header');
+  if (!sentinel || !header || !('IntersectionObserver' in window)) return;
+  new IntersectionObserver(function (entries) {
+    header.classList.toggle('is-floating', !entries[0].isIntersecting);
+  }, { threshold: 0 }).observe(sentinel);
 })();
 </script>
 <script src="/assets/downloads.js?v=20261123group"></script>
